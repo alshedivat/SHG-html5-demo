@@ -1,8 +1,7 @@
 /* Dynamics_v0.7
  *
  * Date:    06.09.2011
- * Author:  Maruan F. Al-Shedivat
- * E-mail:  alshedivat.maruan@gmail.com
+ * Author:  Maruan Al-Shedivat
  *
  * Description: набор функций, придающий динамику объектам:
  *              линии задержки и лазерным импульсам.
@@ -53,7 +52,6 @@ function drawDynamics()
 {
     var canvas = kin.getCanvas();
     var context = kin.getContext();
-    // context.scale(0.7,0.7)
 
     rectX = 355;
     rectY = 280;
@@ -298,22 +296,25 @@ window.onload = function(){
 
     //creating laser paths
     paths.push(new laser_path(red_pulse, 100, 150, 143, 0));
+
     //reflected
     paths.push(new laser_path(red_pulse, 70, 265, 160, -Math.PI / 2));
     paths.push(new laser_path(red_pulse, 275, 272, 40, 0));
+
     //transmitted
     paths.push(new laser_path(red_pulse, 65, 275, 143, 0));
     paths.push(new laser_path(red_pulse, 95, 392, 155, Math.PI / 2));
     paths.push(new laser_path(red_pulse, 45, 375, 266, 0));
     paths.push(new laser_path(red_pulse, 95, 430, 290, -Math.PI / 2));
     paths.push(new laser_path(red_pulse, 145, 440, 144, -90 / 154));
+
     //SH
     paths.push(new laser_path(blue_pulse, 85, 620, 34, -Math.PI / 11));
-
     paths.push(new laser_path(blue_pulse, 9, 615, 25, -90 / 154));
     paths.push(new laser_path(blue_pulse, 20, 615, 40, 0));
 
     kin = new Kinetic_2d('the_canvas');
+
     //delay line image
     delay_line.src = 'images/delay_line.svg';
     drawDynamics();

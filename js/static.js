@@ -1,183 +1,254 @@
-/* Draw_static_objects_v0.5
+/* Generate static objects
  *
- * Date:        06.09.2011
- * Updated:     08.10.2014
- * Author:      Maruan F. Al-Shedivat
+ * Author       : Maruan Al-Shedivat
+ * Created      : 06/09/2011
+ * Updated      : 08/09/2014 (move from kineticjs_v1.0.0 to kineticjs_v5.1.0)
  *
- * Description: Draw static elements and put dynamic ones on
-                the initial positions.
+ * Description  : Initialize static objects.
  */
 
-//on-load drawings
-function static_drawings(context)
-{
-    //draw laser
-    context.beginPath();
-    context.strokeStyle = '#F00';
-    context.fillStyle = "#ffdbdc";
-    context.lineWidth   = 2;
-    context.rect(30,120,120,80);
-    context.fill();
-    context.stroke();
-    context.font = "18pt Calibri";
-    context.fillStyle = '#F00';
-    context.fillText('Laser', 55,110);
+// Main points on the schematic (global variables)
+L   = {x: 150, y: 160};  // laser
+BS  = {x: 280, y: 160};  // beam splitter
+S   = {x: 280, y:  70};  // sample
+NC  = {x: 600, y:  70};  // nonlinear crystal
+M1  = {x: 375, y: 160};  // mirror 1
+M2  = {x: 446, y: 160};  // mirror 2
+D1  = {x: 375, y: 283};  // delay line point 1
+D2  = {x: 446, y: 283};  // delay line point 2
 
-    context.beginPath();
-    context.moveTo(150,160);
-/*  context.lineTo(180,160);
-    context.moveTo(220,160);
-*/  context.lineTo(280,160);
-    context.stroke();
-    context.beginPath();
-    context.lineWidth   = 1;
-    //transmissed
-    context.moveTo(280,160);
-    context.lineTo(375,160);
-    context.lineTo(375,d_lY);
-    context.lineTo(446,d_lY);
-    context.lineTo(446,160);
-    context.lineTo(600,57);
-    //reflected
-    context.moveTo(280,160);
-    context.lineTo(280,57);
-    context.lineTo(600,57);
-    context.stroke();
-    context.lineWidth   = 2;
+function gen_static_objects() {
 
-/*  //draw Glan's prism
-    context.strokeStyle = '#222';
-    context.strokeRect(180,140,40,40);
-    context.beginPath();
-    context.moveTo(180,140);
-    context.lineTo(220,180);
-    context.stroke();
-*/
-    //draw beam splitter
-    context.beginPath();
-    context.strokeStyle = '#4D60FA';
-    context.lineWidth = 5;
-    context.lineCap = 'round';
-    context.moveTo(265,175);
-    context.lineTo(295,145);
-    context.stroke();
-    context.font = "12pt Calibri";
-    context.fillStyle = '#00A';
-   context.fillText('Beam Splitter', 235,195);
+    // Create laser
+    var laser = new Kinetic.Group({
+        x           : 30,
+        y           : 120,
+    });
+    laser.add(new Kinetic.Rect({
+        x           : 0,
+        y           : 0,
+        height      : 80,
+        width       : 120,
+        fill        : '#FFDBDC',
+        stroke      : '#F00',
+    }));
+    laser.add(new Kinetic.Text({
+        x           :  30,
+        y           : -30,
+        text        : 'Laser',
+        fontSize    : 24,
+        fontFamily  : 'Calibri',
+        fill        : 'red'
+    }));
 
-    //draw delay line
-    context.strokeStyle = '#222';
-    context.lineWidth = 2;
-    context.strokeRect(345,200,130,170);
-    context.font = "16pt Calibri";
-    context.fillStyle = '#333';
-   context.fillText('Delay Line', 350,395);
+    // Delay line frame
+    var delay_frame = new Kinetic.Group({
+        x           : 345,
+        y           : 200,
+    });
+    delay_frame.add(new Kinetic.Rect({
+        x           : 0,
+        y           : 0,
+        height      : 170,
+        width       : 130,
+        stroke      : '#333',
+    }));
+    delay_frame.add(new Kinetic.Text({
+        x           :  20,
+        y           : 180,
+        text        : 'Delay Line',
+        fontSize    : 22,
+        fontFamily  : 'Calibri',
+        fill        : '#333'
+    }));
+
+    // Create laser paths
+    var laser_path_start = new Kinetic.Line({
+        points      : [L.x, L.y, BS.x, BS.y,],
+        stroke      : 'red',
+        strokeWidth : 2,
+    });
+
+    var laser_path_reflected = new Kinetic.Line({
+        points      : [BS.x, BS.y, S.x, S.y, NC.x, NC.y,],
+        stroke      : 'red',
+        strokeWidth : 2,
+    });
+
+    var laser_path_transmitted_1 = new Kinetic.Line({
+        points      : [BS.x, BS.y, M1.x, M1.y,],
+        stroke      : 'red',
+        strokeWidth : 2,
+    });
+
+    var laser_path_transmitted_2 = new Kinetic.Line({
+        points      : [M2.x, M2.y, NC.x, NC.y],
+        stroke      : 'red',
+        strokeWidth : 2,
+    });
+
+    var laser_path_SHG = new Kinetic.Group({
+        x           : NC.x,
+        y           : NC.y,
+    });
+    laser_path_SHG.add(new Kinetic.Line({
+        points      : [0, 0, 67, 0,],
+        stroke      : '#77F',
+        strokeWidth : 2,
+    }));
+    laser_path_SHG.add(new Kinetic.Line({
+        points      : [0, 0, 67, 0,],
+        stroke      : '#77F',
+        strokeWidth : 2,
+        rotation    : -35,
+    }));
+    laser_path_SHG.add(Arrow(0, 0, 100, 0, -17.5, 2, 7, 'blue'));
 
     // Sample
-    context.beginPath();
-    context.strokeStyle = '#666';
-    context.lineWidth = 4;
-    context.lineCap = 'round';
-    context.moveTo(262,68);
-    context.lineTo(290,40);
-    context.stroke();
-    context.beginPath();
-    context.strokeStyle = '#c5c228';
-    context.lineWidth = 4;
-    context.lineCap = 'round';
-    context.moveTo(266,69);
-    context.lineTo(271,64);
-    context.moveTo(276,59);
-    context.lineTo(281,54);
-    context.moveTo(286,49);
-    context.lineTo(291,44);
-    context.stroke();
-    context.font = "16pt Calibri";
-    context.fillStyle = '#b3b506';
-   context.fillText('Sample', 250,25);
+    var sample = new Kinetic.Group({
+        x           : S.x,
+        y           : S.y,
+    });
+    sample.add(new Kinetic.Line({
+        points      : [-20, -5, 20, -5,],
+        stroke      : '#666',
+        strokeWidth : 4,
+        lineCap     : 'round',
+        rotation    : -45,
+    }));
+    sample.add(new Kinetic.Line({
+        points      : [-18, -1, 22, -1,],
+        stroke      : '#C5C228',
+        strokeWidth : 4,
+        lineCap     : 'round',
+        lineJoin    : 'round',
+        dash        : [5, 5],
+        rotation    : -45,
+    }));
+    sample.add(new Kinetic.Text({
+        x           : -40,
+        y           : -45,
+        text        : 'Sample',
+        fontSize    : 22,
+        fontFamily  : 'Calibri',
+        fill        : '#C5C228',
+    }));
 
-    //draw lenses
-    context.beginPath();
-    context.strokeStyle = '#4D90FE';
-    context.lineWidth = 4;
-    context.lineCap = 'round';
-    context.moveTo(360,145);    //second
-    context.lineTo(390,175);
-    context.moveTo(435,175);    //third
-    context.lineTo(455,145);
-    context.stroke();
+    // Beam splitter
+    beam_splitter = new Kinetic.Group({
+        x           : BS.x,
+        y           : BS.y,
+    });
+    beam_splitter.add(new Kinetic.Line({
+        points      : [-20, 0, 20, 0],
+        stroke      : '#4D60FA',
+        strokeWidth : 4,
+        lineCap     : 'round',
+        rotation    : -45,
+    }));
+    beam_splitter.add(new Kinetic.Text({
+        x           : -60,
+        y           :  20,
+        text        : 'Beam Splitter',
+        fontSize    : 22,
+        fontFamily  : 'Calibri',
+        fill        : '#4D60FA',
+    }));
 
-    //draw nonlinear crystal
-    context.font = "14pt Calibri";
-    context.fillStyle = '#1596ed';
-    context.fillText('Nonlinear', 565,100);
-    context.fillText('Crystal', 575,120);
-    context.save();
-    context.translate(600,57);
-    context.rotate(-Math.PI / 11);
-    context.beginPath();
-    context.rect(0,-20,15,40);
-    context.fillStyle = '#8ED6FF';
-    context.fill();
-    context.lineWidth = 2;
-    context.strokeStyle = '#222';
-    context.stroke();
+    // Mirrors
+    mirror_1 = new Kinetic.Group({
+        x           : M1.x,
+        y           : M1.y,
+    });
+    mirror_1.add(new Kinetic.Line({
+        points      : [-20, -2, 20, -2],
+        stroke      : '#4D90FE',
+        strokeWidth : 4,
+        lineCap     : 'round',
+        rotation    : 45,
+    }));
+    mirror_2 = new Kinetic.Group({
+        x           : M2.x,
+        y           : M2.y,
+    });
+    mirror_2.add(new Kinetic.Line({
+        points      : [-20, -2, 20, -2],
+        stroke      : '#4D90FE',
+        strokeWidth : 4,
+        lineCap     : 'round',
+        rotation    : -60,
+    }));
 
-    //draw diaphragm
-    context.moveTo(60, 10);
-    context.lineTo(60, 60);
-    context.moveTo(60, -10);
-    context.lineTo(60, -60);
-    context.moveTo(55, -10);
-    context.lineTo(65, -10);
-    context.moveTo(55, 10);
-    context.lineTo(65, 10);
-    context.stroke();
+    // Nonlinear crystal
+    crystal = new Kinetic.Group({
+        x           : NC.x,
+        y           : NC.y,
+    });
+    crystal.add(new Kinetic.Rect({
+        x           :  10,
+        y           : -24,
+        height      : 15,
+        width       : 40,
+        fill        : '#8ED6FF',
+        stroke      : '#00F',
+        rotation    : 75,
+    }));
+    crystal.add(new Kinetic.Text({
+        x           : -30,
+        y           :  30,
+        text        : 'Nonlinear\nCrystal',
+        fontSize    : 22,
+        fontFamily  : 'Calibri',
+        fill        : '#1596ED',
+        align       : 'center',
+    }));
 
-    //draw SH beam
-    context.beginPath();
-    context.strokeStyle = '#00D';
-    context.lineWidth = 2;
-    context.lineJoin = 'round';
-    context.moveTo(16,0);
-    context.lineTo(120,0);
-    context.lineTo(110,2);
-    context.lineTo(110,-2);
-    context.lineTo(120,0);
-    context.stroke();
+    // Detector and diaphragm
+    detector = new Kinetic.Group({
+        x           : NC.x + 65,
+        y           : NC.y - 5,
+    });
+    detector.add(new Kinetic.Line({
+        points      : [0, -55, 0, 25],
+        stroke      : '#333',
+        strokeWidth : 4,
+        lineCap     : 'round',
+        lineJoin    : 'round',
+        dash        : [35, 10],
+        rotation    : -15,
+    }));
+    detector.add(new Kinetic.Shape({
+        drawFunc    : function(context) {
+            context.beginPath();
+            context.arc(40, -17, 15, -Math.PI / 2, Math.PI / 2, false);
+            context.closePath();
+            context.moveTo(55, -17);
+            context.lineTo(120, -17);
+            context.fillStrokeShape(this);
+        },
+        fill        : '#DDD',
+        stroke      : '#222',
+        rotation    : -15,
+    }));
+    detector.add(new Kinetic.Text({
+        x           : 20,
+        y           : -5,
+        text        : 'Detector',
+        fontSize    : 22,
+        fontFamily  : 'Calibri',
+        fill        : '#666',
+    }));
+    detector.add(new Kinetic.Text({
+        x           : -150,
+        y           :  150,
+        text        : 'Detected SH intensity:',
+        fontSize    : 26,
+        fontFamily  : 'Calibri',
+        fill        : '#333',
+    }));
 
-    context.rotate(Math.PI / 11);
-    context.beginPath();
-    context.strokeStyle = '#77F';
-    context.lineWidth = 2;
-    context.lineJoin = 'round';
-    context.moveTo(17,0);
-    context.lineTo(60,0);
-    context.moveTo(15,-10);
-    context.lineTo(50,-35);
-    context.stroke();
-
-    //draw detector
-    context.rotate(Math.PI / -11);
-    context.beginPath();
-    context.strokeStyle = '#222';
-    context.arc(140, 0, 15, -Math.PI / 2, Math.PI / 2, false);
-    context.closePath()
-    context.fillStyle = '#ddd';
-    context.fill();
-    context.moveTo(155, 0);
-    context.lineTo(180,0);
-    context.stroke();
-    context.restore();
-    context.font = "14pt Calibri";
-    context.fillStyle = '#555';
-    context.fillText('Detector', 690,60);
-
-    //Write the detected intensity
-    context.font = "16pt Calibri";
-    context.fillStyle = '#666';
-    context.fillText('Detected SH intensity:', 520,215);
-    context.font = "18pt Calibri";
-    context.fillStyle = '#22D';
-    context.fillText('I = ' + SH_intensity + ' units', 540,250);
+    return [laser, delay_frame, laser_path_SHG,
+            laser_path_start, laser_path_reflected,
+            laser_path_transmitted_1, laser_path_transmitted_2,
+            sample, beam_splitter, mirror_1, mirror_2, crystal, detector];
 }
