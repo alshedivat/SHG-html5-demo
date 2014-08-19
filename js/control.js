@@ -75,7 +75,17 @@ function gen_control_objects() {
         start_text.fill(start_text_color);
         start_button.draw();
     });
-    start_region.on('click', function(){
+    start_region.on('mousedown touchend', function(){
+        start_rect.fill(start_bg_color);
+        start_text.fill(start_text_color);
+        start_button.draw();
+    });
+    start_region.on('mouseup touchstart', function(){
+        start_rect.fill('#090');
+        start_text.fill('#FFF');
+        start_button.draw();
+    });
+    start_region.on('click tap', function(){
         anim.start();
     });
 
@@ -120,7 +130,17 @@ function gen_control_objects() {
         stop_text.fill(stop_text_color);
         stop_button.draw();
     });
-    stop_region.on('click', function(){
+    stop_region.on('mousedown touchend', function(){
+        stop_rect.fill(stop_bg_color);
+        stop_text.fill(stop_text_color);
+        stop_button.draw();
+    });
+    stop_region.on('mouseup touchstart', function(){
+        stop_rect.fill('#900');
+        stop_text.fill('#FFF');
+        stop_button.draw();
+    });
+    stop_region.on('click tap', function(){
         anim.stop();
         detection_text.setText('I = 0 units');
         for (var i = 0; i < paths.length; i++) {
@@ -206,7 +226,17 @@ function gen_control_objects() {
         up_arrow.stroke(ctrl_arrow_color_UP);
         delay_control.draw();
     });
-    up_region.on('mousedown', function(){
+    up_region.on('mouseup touchstart', function(){
+        up_rect.fill(ctrl_arrow_color_UP);
+        up_arrow.stroke(ctrl_color_UP);
+        delay_control.draw();
+    });
+    up_region.on('mousedown touchend', function(){
+        up_rect.fill(ctrl_color_UP);
+        up_arrow.stroke(ctrl_arrow_color_UP);
+        delay_control.draw();
+    });
+    up_region.on('click tap', function(){
         if (delay_mirrors.getAbsolutePosition().y > Dy_min) {
             delay_mirrors.move({x: 0, y: -D_step});
             DL -= D_step;
@@ -250,7 +280,17 @@ function gen_control_objects() {
         down_arrow.stroke(ctrl_arrow_color_DOWN);
         delay_control.draw();
     });
-    down_region.on('click', function(){
+    down_region.on('mouseup touchstart', function(){
+        down_rect.fill(ctrl_arrow_color_DOWN);
+        down_arrow.stroke(ctrl_color_DOWN);
+        delay_control.draw();
+    });
+    down_region.on('mousedown touchend', function(){
+        down_rect.fill(ctrl_color_DOWN);
+        down_arrow.stroke(ctrl_arrow_color_DOWN);
+        delay_control.draw();
+    });
+    down_region.on('click tap', function(){
         if (delay_mirrors.getAbsolutePosition().y < Dy_max) {
             delay_mirrors.move({x: 0, y: D_step});
             DL += D_step;
